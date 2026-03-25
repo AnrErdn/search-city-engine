@@ -1,65 +1,98 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
 
 export default function Home() {
+  const [data, setData] = useState([]);
+  const [city, setCity] = useState("");
+  const [duureg, setDuureg] = useState("");
+  const [khoroo, setKhoroo] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("https://api.bestdelivery.mn/khoroo");
+      const result = await res.json();
+
+      console.log(result);
+      console.log(result.data?.khoroo);
+      
+      setData(result || []);
+    };
+
+    fetchData();
+  }, []);
+
+  const handleReset = () => {
+    setCity("");
+    setDuureg("");
+    setKhoroo("");
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white w-full max-w-3xl p-6 rounded-xl shadow space-y-6">
+
+        <h2 className="text-lg font-semibold text-center text-black">
+          Location Selector
+        </h2>
+
+        <div className="flex flex-wrap gap-3 items-center">
+
+          <select
+            value={city}
+            onChange={(e) => {
+              setCity(e.target.value);
+              setDuureg("");
+            }}
+            className="flex-1 min-w-[150px] p-2 border rounded text-black"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <option value="">City</option>
+            {data?.data?.city?.map((c, i) => (
+              <option key={i} value={c.value}>
+                {c.value}
+              </option>
+            ))}
+          </select>
+
+          <select
+              value={duureg}
+              onChange={(e) => setDuureg(e.target.value)}
+              disabled={!city}
+              className="flex-1 min-w-[150px] p-2 border rounded disabled:bg-gray-200 text-black"
+            >
+            <option value="">Duureg</option>
+            {data?.data?.street
+              ?.filter((d) => d.value === city)
+              .map((d, i) => (
+                <option key={i} value={d.label}>
+                  {d.label}
+                </option>
+              ))}
+          </select>
+
+          <input
+            type="text"
+            placeholder="Khoroo"
+            value={khoroo}
+            onChange={(e) => setKhoroo(e.target.value)}
+            className="flex-1 min-w-[150px] p-2 border rounded text-black"
+          />
+
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >
-            Documentation
-          </a>
+            ✖
+          </button>
         </div>
-      </main>
+
+        <div className="border-t pt-4 text-sm space-y-1 text-black">
+          <p><strong>City:</strong> {city || "No city"}</p>
+          <p><strong>Duureg:</strong> {duureg || "No duureg"}</p>
+          <p><strong>Khoroo:</strong> {khoroo || "No khoroo"}</p>
+        </div>
+
+      </div>
     </div>
   );
 }
