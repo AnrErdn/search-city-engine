@@ -55,19 +55,25 @@ export default function Home() {
           </select>
 
           <select
-              value={duureg}
-              onChange={(e) => setDuureg(e.target.value)}
-              disabled={!city}
-              className="flex-1 min-w-[150px] p-2 border rounded disabled:bg-gray-200 text-black"
-            >
-            <option value="">Duureg</option>
-            {data?.data?.street
-              ?.filter((d) => d.value === city)
-              .map((d, i) => (
-                <option key={i} value={d.label}>
-                  {d.label}
-                </option>
-              ))}
+            value={duureg}
+            onChange={(e) => setDuureg(e.target.value)}
+            disabled={!city}
+            className="flex-1 min-w-[150px] p-2 border rounded disabled:bg-gray-200 text-black"
+          >
+            {!city ? (
+              <option value="">Choose your city</option> 
+            ) : (
+              <option value="">Select a Duureg</option> 
+            )}
+
+            {city &&
+              data?.data?.street
+                ?.filter((d) => d.value === city)
+                .map((d, i) => (
+                  <option key={i} value={d.label}>
+                    {d.label}
+                  </option>
+                ))}
           </select>
 
           <input
